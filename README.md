@@ -11,4 +11,5 @@ https://ai.google.dev/gemini-api/docs/quickstart?lang=python
 7. Create an account at https://elevenlabs.io/ and create an API key
 8. Once you have the key, run `python integrate_eleven_key.py [key_value]`
 9. Run `pip install elevenlabs`
-10. Run `python main.py [commercial_topic]`, like `python main.py banana`
+10. Run `pip install mutagen`
+11. Run `python main.py [commercial_topic]`, like `python main.py banana`
