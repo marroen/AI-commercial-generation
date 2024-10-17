@@ -32,6 +32,8 @@ api_host = os.getenv('API_HOST', 'https://api.stability.ai')
 eleven_client = ElevenLabs(api_key=eleven_key)
 
 def create_video(n):
+
+    # Load image(s)
     images = []
     for i in range(0, n):
         image = ImageClip(f"out/image_{i}.png").set_duration(15).set_position('center')
@@ -43,28 +45,25 @@ def create_video(n):
         images.append(image)
     image_sequence = concatenate_videoclips(images, method="compose")
 
+    # Create speech
     speech_length = MP3("out/speech.mp3").info.length
     speech_length = 45 if speech_length >= 45 else speech_length
     speech = AudioFileClip("out/speech.mp3").subclip(0, speech_length)
 
+    # Load music
     # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
     music = AudioFileClip("out/innovate.mp3").subclip(0, 45).volumex(0.5)
 
+    # Prepare and write videofile
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
-
     video = image_sequence.set_audio(combined_audio)
-
     video.write_videofile("out/video.mp4", fps=24)
 
 async def create_speech(script):
-    female = "XB0fDUnXU5powFXDhCwa" # Charlotte
-    male = "N2lVS1w4EtoT3dr4eOWO" # Callum
-    CHUNK_SIZE = 1024
-    url = f"https:/api.elevenlabs.io/v1/text-to-speech/6"
 
     audio = eleven_client.generate(
         text=script,
-        voice="Charlotte",
+        voice="Charlotte", # Callum for male
         model="eleven_multilingual_v2"
     )
     save(audio, "out/speech.mp3")
@@ -73,6 +72,7 @@ async def create_speech(script):
 
 
 async def create_image(prompt, n):
+
     for i in range(0, n):
         response = requests.post(
             f"{api_host}/v1/generation/{engine_id}/text-to-image",
