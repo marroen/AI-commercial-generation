@@ -2,7 +2,7 @@ Steps:
 
 1. Ensure you have python version 3.10 or above BEFORE running any pip installs (recommend pyenv for python version management)
 
-2. Run `pip install --upgrade google-api-python-client`
+2. Run `pip install -r requirements.txt`
 
 3. Follow this to install google-generativeui and to create a key:
 https://ai.google.dev/gemini-api/docs/quickstart?lang=python
@@ -17,13 +17,9 @@ https://ai.google.dev/gemini-api/docs/quickstart?lang=python
 
 8. Once you have the key, run `python integrate_eleven_key.py [key_value]`
 
-9. Run `pip install elevenlabs`
+9. Run `python main.py -t [commercial_topic]`, like `python main.py -t banana`
 
-10. Run `pip install mutagen`
-
-11. Run `python main.py -t [commercial_topic]`, like `python main.py -t banana`
-
-12. You can also customize it (run python main.py --help for info):
+10. You can also customize it (run python main.py --help for info):
 
 -g if you want to generate new AI content, or else it looks for existing
 
