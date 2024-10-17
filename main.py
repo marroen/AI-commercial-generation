@@ -37,7 +37,7 @@ def create_video(n):
     # Load image(s)
     images = []
     for i in range(0, n):
-        image = ImageClip(f"out/image_{i}.png").set_duration(15).set_position('center')
+        image = ImageClip(f"out/image_{i}.png").set_duration(10).set_position('center')
         
         if i == 0:
             image = image.fx(vfx.fadein, 1)
@@ -83,15 +83,15 @@ async def create_image(prompt, n):
             json={
                 "text_prompts": [
                     {
-                        "text": f"Apple (company) commercial-style image, BUT also include a lot of {prompt}",
+                        "text": f"{prompt} made by Apple (company)",
                         "weight": 1
                     },
                     {
-                        "text": f"photorealistic, fujifilm 4k, (apple logo)",
+                        "text": f"photorealistic, fujifilm 4k, (apple logo), usb port, wires, plugged in",
                         "weight": 0.7
                     },
                     {
-                        "text": f"Ugly, bad faces, nsfw,worst quality, low quality, illustration, 3d, 2d, painting, cartoons, sketch, no {prompt}",
+                        "text": f"Ugly, bad faces, nsfw, worst quality, low quality, illustration, 3d, 2d, painting, cartoons, sketch, no {prompt}",
                         "weight": -1
                     }
                 ],
@@ -120,13 +120,13 @@ async def main():
     parser.add_argument('-g', "--generate", dest="should_generate" , required=False, action='store_true', help="Whether to generate new content or to look for existing content for the video. WARNING: this will use credits from the AI APIs.")
     parser.add_argument('-n',               dest="n",                required=False, type=int, help="The number of images to produce for the video, with each image being on-screen for 15 sec. WARNING: ensure you have enough ElevenLabs credits.")
     parser.set_defaults(should_generate=False)
-    parser.set_defaults(n=3)
+    parser.set_defaults(n=5)
 
     args = parser.parse_args()
     commercial_topic = args.commercial_topic
     n = args.n
 
-    commercial_length = n * 60
+    commercial_length = n * 40
 
     script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
 
@@ -138,7 +138,7 @@ async def main():
         await create_image(commercial_topic, n)
         # await create_speech(processed_text)
 
-    # create_video(n)
+    create_video(n)
 
 asyncio.run(main())
 
