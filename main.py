@@ -6,6 +6,7 @@ import os
 import base64
 import requests
 import sys
+import re
 
 # API imports
 import google.generativeai as genai
@@ -117,16 +118,18 @@ async def main():
     n = args.n
 
     commercial_length = n * 60
-    
+
     script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
 
     if args.should_generate:
         response = gemini_model.generate_content(script)
-        print(response.text)
-        await create_image(commercial_topic, n)
-        await create_speech(response.text)
+        processed_text = re.sub("\(.*?\)|\[.*?\]", "", response.text)
+        print(processed_text)
 
-    create_video(n) 
+        # await create_image(commercial_topic, n)
+        # await create_speech(processed_text)
+
+    # create_video(n)
 
 asyncio.run(main())
 
