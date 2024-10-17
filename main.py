@@ -2,6 +2,12 @@ import inspect
 import pathlib
 import argparse
 import asyncio
+import os
+import base64
+import requests
+import sys
+
+# API imports
 import google.generativeai as genai
 from gemini_key import gemini_key
 from stability_key import stability_key
@@ -10,17 +16,20 @@ from elevenlabs.client import ElevenLabs
 from elevenlabs import play, save
 from moviepy.editor import *
 from mutagen.mp3 import MP3
-import os
+
+if gemini_key is None:
+    raise Exception("Missing Gemini API key.")
+elif stability_key is None:
+    raise Exception("Missing Stability API key.")
+elif eleven_key is None:
+    raise Exception("Missing ElevenLabs API key.")
+
+# Configure keys
 genai.configure(api_key=gemini_key)
-
-import base64
-import requests
-
-import sys
-
-model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 engine_id = "stable-diffusion-v1-6"
 api_host = os.getenv('API_HOST', 'https://api.stability.ai')
+eleven_client = ElevenLabs(api_key=eleven_key)
 
 def create_video(n):
     images = []
@@ -53,9 +62,7 @@ async def create_speech(script):
     CHUNK_SIZE = 1024
     url = f"https:/api.elevenlabs.io/v1/text-to-speech/6"
 
-    client = ElevenLabs(api_key=eleven_key)
-
-    audio = client.generate(
+    audio = eleven_client.generate(
         text=script,
         voice="Charlotte",
         model="eleven_multilingual_v2"
@@ -63,8 +70,7 @@ async def create_speech(script):
     save(audio, "out/speech.mp3")
     await asyncio.sleep(6)
 
-if stability_key is None:
-    raise Exception("Missing Stability API key.")
+
 
 async def create_image(prompt, n):
     for i in range(0, n):
@@ -117,7 +123,7 @@ async def main():
     script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
 
     if args.should_generate:
-        response = model.generate_content(script)
+        response = gemini_model.generate_content(script)
         print(response.text)
         await create_image(commercial_topic, n)
         await create_speech(response.text)
