@@ -110,24 +110,7 @@ async def main():
 
     #await create_speech(response.text)
 
-    create_video(n)
-
- 
-# clip creation API
-# image AI API
-# music AI API
-# text AI API
-# speech AI API
-
-'''
-x = "prompt"
-image = image-api-call(x)
-music = audio-api-call("apple commerical")
-text = text-api-call(x)
-speech = speech-api-call(text)
-
-clip = clip-creation-api(image, music, speech)
-'''
+    create_video(n) 
 
 asyncio.run(main())
 
