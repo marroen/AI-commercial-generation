@@ -20,10 +20,20 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 engine_id = "stable-diffusion-v1-6"
 api_host = os.getenv('API_HOST', 'https://api.stability.ai')
 
+# Create a more drastic pan for image1
+def pan(t):
+    return (-image1.w + (1920 + 2 * image1.w) * t / 5, 0)
+
 def create_video(n):
     images = []
     for i in range(0, n):
-        images.append(ImageClip(f"out/image_{i}.png").set_duration(15))
+        image = ImageClip(f"out/image_{i}.png").set_duration(15).set_position('center')
+        
+        if i == 0:
+            image = image.fx(vfx.fadein, 1)
+        elif i == n-1:
+            image = image.fx(vfx.fadeout, 1)
+        images.append(image)
     image_sequence = concatenate_videoclips(images, method="compose")
 
     speech_length = MP3("out/speech.mp3").info.length
@@ -101,9 +111,9 @@ async def main():
     commercial_topic = sys.argv[1]
     
     script = f"make a commercial speech about {commercial_topic}, intended for about 150 sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
-    response = model.generate_content(script)
+    #response = model.generate_content(script)
 
-    print(response.text)
+    #print(response.text)
 
     n = 3
 
