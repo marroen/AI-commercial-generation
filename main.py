@@ -1,4 +1,6 @@
 import inspect
+import pathlib
+import argparse
 import asyncio
 import google.generativeai as genai
 from gemini_key import gemini_key
@@ -98,24 +100,27 @@ async def create_image(prompt, n):
         await asyncio.sleep(6)
 
 async def main():
-    # Check if a command-line argument is provided
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <commercial_topic>")
-        sys.exit(1)
 
-    # Get the key_value from the command-line argument
-    commercial_topic = sys.argv[1]
+    parser = argparse.ArgumentParser(description="AI Commercial Generator.")
+    parser.add_argument('-t', "--topic"   , dest="commercial_topic", required=True,  type=str, help="The commercial topic.")
+    parser.add_argument('-g', "--generate", dest="should_generate" , required=False, action='store_true', help="Whether to generate new content or to look for existing content for the video. WARNING: this will use credits from the AI APIs.")
+    parser.add_argument('-n',               dest="n",                required=False, type=int, help="The number of images to produce for the video, with each image being on-screen for 15 sec. WARNING: ensure you have enough ElevenLabs credits.")
+    parser.set_defaults(should_generate=False)
+    parser.set_defaults(n=3)
+
+    args = parser.parse_args()
+    commercial_topic = args.commercial_topic
+    n = args.n
+
+    commercial_length = n * 60
     
-    script = f"make a commercial speech about {commercial_topic}, intended for about 150 sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
-    #response = model.generate_content(script)
+    script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
 
-    #print(response.text)
-
-    n = 3
-
-    #await create_image(commercial_topic, n)
-
-    #await create_speech(response.text)
+    if args.should_generate:
+        response = model.generate_content(script)
+        print(response.text)
+        await create_image(commercial_topic, n)
+        await create_speech(response.text)
 
     create_video(n) 
 
