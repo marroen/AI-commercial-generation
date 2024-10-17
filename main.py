@@ -69,8 +69,6 @@ async def create_speech(script):
     save(audio, "out/speech.mp3")
     await asyncio.sleep(6)
 
-
-
 async def create_image(prompt, n):
 
     for i in range(0, n):
