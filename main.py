@@ -23,14 +23,15 @@ api_host = os.getenv('API_HOST', 'https://api.stability.ai')
 def create_video(n):
     images = []
     for i in range(0, n):
-        images.append(ImageClip(f"out/image_{i}.png").set_duration(20))
+        images.append(ImageClip(f"out/image_{i}.png").set_duration(15))
     image_sequence = concatenate_videoclips(images, method="compose")
 
     speech_length = MP3("out/speech.mp3").info.length
-    speech = AudioFileClip("out/speech.mp3").subclip(0, (speech_length - 2))
+    speech_length = 45 if speech_length >= 45 else speech_length
+    speech = AudioFileClip("out/speech.mp3").subclip(0, speech_length)
 
     # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
-    music = AudioFileClip("out/innovate.mp3").subclip(0, 55)
+    music = AudioFileClip("out/innovate.mp3").subclip(0, 45).volumex(0.5)
 
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
 
