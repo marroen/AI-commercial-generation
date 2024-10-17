@@ -83,7 +83,16 @@ async def create_image(prompt, n):
             json={
                 "text_prompts": [
                     {
-                        "text": f"Apple (company) commercial-style image, BUT also include a lot of {prompt}"
+                        "text": f"Apple (company) commercial-style image, BUT also include a lot of {prompt}",
+                        "weight": 1
+                    },
+                    {
+                        "text": f"photorealistic, fujifilm 4k, (apple logo)",
+                        "weight": 0.7
+                    },
+                    {
+                        "text": f"Ugly, bad faces, nsfw,worst quality, low quality, illustration, 3d, 2d, painting, cartoons, sketch, no {prompt}",
+                        "weight": -1
                     }
                 ],
                 "cfg_scale": 7,
@@ -126,7 +135,7 @@ async def main():
         processed_text = re.sub("\(.*?\)|\[.*?\]", "", response.text)
         print(processed_text)
 
-        # await create_image(commercial_topic, n)
+        await create_image(commercial_topic, n)
         # await create_speech(processed_text)
 
     # create_video(n)
