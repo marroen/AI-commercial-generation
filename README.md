@@ -24,5 +24,7 @@ https://ai.google.dev/gemini-api/docs/quickstart?lang=python
 11. Run `python main.py -t [commercial_topic]`, like `python main.py -t banana`
 
 12. You can also customize it (run python main.py --help for info):
+
 -g if you want to generate new AI content, or else it looks for existing
+
 -n to specify how many images to generate for the video
