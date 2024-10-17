@@ -20,10 +20,6 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 engine_id = "stable-diffusion-v1-6"
 api_host = os.getenv('API_HOST', 'https://api.stability.ai')
 
-# Create a more drastic pan for image1
-def pan(t):
-    return (-image1.w + (1920 + 2 * image1.w) * t / 5, 0)
-
 def create_video(n):
     images = []
     for i in range(0, n):
