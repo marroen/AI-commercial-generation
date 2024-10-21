@@ -7,6 +7,7 @@ import base64
 import requests
 import sys
 import re
+from random import randrange
 
 # API imports
 import google.generativeai as genai
@@ -34,10 +35,24 @@ eleven_client = ElevenLabs(api_key=eleven_key)
 
 def create_video(n):
 
+    # Create speech
+    speech_length = MP3("out/speech.mp3").info.length
+    # speech_length = 45 if speech_length >= 45 else speech_length
+    speech = AudioFileClip("out/speech.mp3") # .subclip(0, speech_length)
+
+    #set video duration based on speech length
+    video_duration = speech_length + 7
+
+    # Load music
+    # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
+    # Other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirenemt
+    song_id = randrange(3)+1
+    music = AudioFileClip("out/song_" + str(song_id) + ".mp3").subclip(0, video_duration).volumex(0.5)
+
     # Load image(s)
     images = []
     for i in range(0, n):
-        image = ImageClip(f"out/image_{i}.png").set_duration(10).set_position('center')
+        image = ImageClip(f"out/image_{i}.png").set_duration(video_duration/n).set_position('center')
         
         if i == 0:
             image = image.fx(vfx.fadein, 1)
@@ -45,15 +60,6 @@ def create_video(n):
             image = image.fx(vfx.fadeout, 1)
         images.append(image)
     image_sequence = concatenate_videoclips(images, method="compose")
-
-    # Create speech
-    speech_length = MP3("out/speech.mp3").info.length
-    speech_length = 45 if speech_length >= 45 else speech_length
-    speech = AudioFileClip("out/speech.mp3").subclip(0, speech_length)
-
-    # Load music
-    # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
-    music = AudioFileClip("out/innovate.mp3").subclip(0, 45).volumex(0.5)
 
     # Prepare and write videofile
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
@@ -135,7 +141,7 @@ async def main():
         processed_text = re.sub("\(.*?\)|\[.*?\]", "", response.text)
         print(processed_text)
 
-        await create_image(commercial_topic, n)
+        # await create_image(commercial_topic, n)
         # await create_speech(processed_text)
 
     create_video(n)
