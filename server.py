@@ -11,7 +11,7 @@ def index():
 def generate_video():
     prompt = request.form.get('prompt')
     subprocess.run(['python', 'main.py', '-t', prompt])
-    return send_file('out/video.mp4', mimetype='video/mp4')
+    return send_file('static/video.mp4', mimetype='video/mp4')
 
 if __name__ == '__main__':
     app.run(debug=True)

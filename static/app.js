@@ -16,23 +16,27 @@ document.getElementById("promptForm").addEventListener("submit", async function(
         if (response.ok) {
             // Update video source dynamically
             const videoElement = document.getElementById("generatedVideo");
-            videoElement.src = "/out/video.mp4";  // This assumes the file is served at this path
+            videoElement.src = "/static/video.mp4";  // This assumes the file is served at this path
             videoElement.load();  // Reload the video with the new source
 
             // Make the video section visible
             document.getElementById("videoSection").style.display = "block";
             document.getElementById("videoSection").style.opacity = 1;
 
-            // Scroll down to the video section based on viewport height
-            const videoSection = document.getElementById("videoSection");
-            const offset = window.innerHeight * 0.1;
-            const sectionPosition = videoSection.getBoundingClientRect().top + window.scrollY;
-
-            window.scrollTo({
-                top: sectionPosition - offset,
-                behavior: "smooth"
+            // Autoplay the video
+            videoElement.play().catch(error => {
+                console.error('Error trying to play the video:', error);
             });
 
+            // Scroll to the bottom of the video section when the video is loaded
+                videoElement.addEventListener('loadeddata', function() {
+                const videoSectionBottom = videoSection.offsetTop + videoSection.offsetHeight; 
+
+                window.scrollTo({
+                    top: videoSectionBottom,
+                    behavior: "smooth" 
+                });
+            });
 
         } else {
             console.error('Error generating video');
