@@ -3,15 +3,27 @@ document.getElementById("promptForm").addEventListener("submit", async function(
 
     const prompt = document.getElementById("prompt").value;
 
+    if (!prompt) {
+        console.error('Prompt is empty!');
+        return;
+    }
+
+    alert("Please wait a few minutes.. check your terminal");
+
     // Send prompt to the backend server
     let formData = new FormData();
     formData.append("prompt", prompt);
 
+
+    
     try {
         let response = await fetch('/generate', {
             method: 'POST',
             body: formData
         });
+
+        // Hide the popup after the request completes
+        popup.style.display = "none";
 
         if (response.ok) {
             // Update video source dynamically
@@ -29,7 +41,7 @@ document.getElementById("promptForm").addEventListener("submit", async function(
             });
 
             // Scroll to the bottom of the video section when the video is loaded
-                videoElement.addEventListener('loadeddata', function() {
+            videoElement.addEventListener('loadeddata', function() {
                 const videoSectionBottom = videoSection.offsetTop + videoSection.offsetHeight; 
 
                 window.scrollTo({
@@ -42,6 +54,8 @@ document.getElementById("promptForm").addEventListener("submit", async function(
             console.error('Error generating video');
         }
     } catch (error) {
+        // Hide the popup in case of an error
+        popup.style.display = "none";
         console.error('Error:', error);
     }
 });
