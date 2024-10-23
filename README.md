@@ -24,3 +24,5 @@ https://ai.google.dev/gemini-api/docs/quickstart?lang=python
 -g if you want to generate new AI content, or else it looks for existing
 
 -n to specify how many images to generate for the video
+
+-v if you want to generate a video from clips already saved in the folder out/videos 
