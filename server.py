@@ -10,7 +10,7 @@ def index():
 @app.route('/generate', methods=['POST'])
 def generate_video():
     prompt = request.form.get('prompt')
-    subprocess.run(['python', 'main.py', '-t', prompt])
+    subprocess.run(['python', 'main.py', '-t', prompt, '-g'])
     return send_file('static/video.mp4', mimetype='video/mp4')
 
 if __name__ == '__main__':
