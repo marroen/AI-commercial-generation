@@ -87,19 +87,22 @@ def create_vid2():
     video_sequence = concatenate_videoclips(seq, method="compose")
 
     #slow down clips if length of video is too short
-    if video_sequence.duration < speech_length:
-        factor = video_sequence.duration / speech_length
+    if video_sequence.duration < target_duration:
+        factor = video_sequence.duration / target_duration
         video_sequence = video_sequence.fx(vfx.speedx, factor)
 
     # Load music
     # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
     # Other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirenemt
     song_id = randrange(3) + 1
-    music = AudioFileClip("out/song_" + str(song_id) + ".mp3").subclip(0, video_sequence.duration).volumex(0.5)
+        
+    music = AudioFileClip("out/song_" + str(song_id) + ".mp3").subclip(0, target_duration).volumex(0.5)
 
     # Prepare and write videofile
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
     video = video_sequence.set_audio(combined_audio)
+
+    video.fx(vfx.fadeout, 1)
     video.write_videofile("out/video_2.mp4", fps=24)
 
 
