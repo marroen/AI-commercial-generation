@@ -17,9 +17,6 @@ https://ai.google.dev/gemini-api/docs/quickstart?lang=python
 
 8. Once you have the key, run `python integrate_eleven_key.py [key_value]`
 
-9. Run `python main.py` to generate an example video
+9. Run `python main.py` to generate an example video with existing generated content
 
-10. To generate new content, run `python main.py -t [commercial_topic]`, like `python main.py -t coffee`
-Note: This will use credits from Gemini, Stability and ElevenLabs.
-
-11. Use flag -n to specify how many images to generate from Stability (default=3)
+10. Run `python server.py` to open the web GUI. Note: this will use credits!
