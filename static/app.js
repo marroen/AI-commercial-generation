@@ -22,18 +22,14 @@ document.getElementById("promptForm").addEventListener("submit", async function(
             body: formData
         });
 
-        // Hide the popup after the request completes
-        popup.style.display = "none";
-
         if (response.ok) {
             // Update video source dynamically
             const videoElement = document.getElementById("generatedVideo");
-            videoElement.src = "/static/video.mp4";  // This assumes the file is served at this path
+            videoElement.src = "/out/video.mp4";  // This assumes the file is served at this path
             videoElement.load();  // Reload the video with the new source
 
             // Make the video section visible
             document.getElementById("videoSection").style.display = "block";
-            document.getElementById("videoSection").style.opacity = 1;
 
             // Autoplay the video
             videoElement.play().catch(error => {
@@ -54,8 +50,6 @@ document.getElementById("promptForm").addEventListener("submit", async function(
             console.error('Error generating video');
         }
     } catch (error) {
-        // Hide the popup in case of an error
-        popup.style.display = "none";
         console.error('Error:', error);
     }
 });

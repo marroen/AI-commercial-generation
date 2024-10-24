@@ -103,10 +103,8 @@
     }
     
     #videoSection {
-            margin-top: 100px; /* Push the video section initially out of view */
-            display: none; /* Hide the video initially */
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+            margin-top: 100px;
+            display: block;
             width: 100%;
         }
 
@@ -116,6 +114,7 @@
             box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
             height: auto;
             width: 100%;
+            z-index: -1;
         }
 </style>
 </html>
