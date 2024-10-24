@@ -27,7 +27,7 @@ elif stability_key is None:
 elif eleven_key is None:
     raise Exception("Missing ElevenLabs API key.")
 
-# Configure keys
+# configure keys
 genai.configure(api_key=gemini_key)
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 engine_id = "stable-diffusion-v1-6"
@@ -36,21 +36,20 @@ eleven_client = ElevenLabs(api_key=eleven_key)
 
 def create_video(n):
 
-    # Create speech
+    # create speech
     speech_length = MP3("out/speech.mp3").info.length
-    # speech_length = 45 if speech_length >= 45 else speech_length
     speech = AudioFileClip("out/speech.mp3") # .subclip(0, speech_length)
 
-    #set video duration based on speech length
+    # set video duration based on speech length
     video_duration = speech_length + 7
 
-    # Load music
+    # load music
     # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
-    # Other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirenemt
+    # other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirement
     song_id = randrange(3)+1
     music = AudioFileClip("out/song_" + str(song_id) + ".mp3").subclip(0, video_duration).volumex(0.5)
 
-    # Load image(s)
+    # load image(s)
     images = []
     for i in range(0, n):
         image = ImageClip(f"out/image_{i}.png").set_duration(video_duration/n).set_position('center')
@@ -62,13 +61,13 @@ def create_video(n):
         images.append(image)
     image_sequence = concatenate_videoclips(images, method="compose")
 
-    # Prepare and write videofile
+    # prepare and write videofile
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
     video = image_sequence.set_audio(combined_audio)
     video.write_videofile("out/video.mp4", fps=24)
 
 def create_vid2():
-    # Create speech
+    # create speech
     speech = AudioFileClip("out/speech.mp3")
     speech_length = MP3("out/speech.mp3").info.length
     # set video duration based on speech length
@@ -86,19 +85,19 @@ def create_vid2():
 
     video_sequence = concatenate_videoclips(seq, method="compose")
 
-    #slow down clips if length of video is too short
+    # slow down clips if length of video is too short
     if video_sequence.duration < target_duration:
         factor = video_sequence.duration / target_duration
         video_sequence = video_sequence.fx(vfx.speedx, factor)
 
-    # Load music
+    # load music
     # prompt: an apple (company) commercial style background song , 30 sec, modernistic, technological
-    # Other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirenemt
+    # other prompts for other songs included adding tags like explorative, mysterious, orchestral, and removing the length requirement
     song_id = randrange(3) + 1
         
     music = AudioFileClip("out/song_" + str(song_id) + ".mp3").subclip(0, target_duration).volumex(0.5)
 
-    # Prepare and write videofile
+    # prepare and write videofile
     combined_audio = CompositeAudioClip([speech.set_start(5), music.set_start(0)])
     video = video_sequence.set_audio(combined_audio)
 
@@ -108,9 +107,10 @@ def create_vid2():
 
 async def create_speech(script):
 
+    speaker_id = randrange(2)
     audio = eleven_client.generate(
         text=script,
-        voice="Charlotte", # Callum for male
+        voice= "Charlotte" if speaker_id == 0 else "Callum",
         model="eleven_multilingual_v2"
     )
     save(audio, "out/speech.mp3")
@@ -162,33 +162,37 @@ async def create_image(prompt, n):
 async def main():
 
     parser = argparse.ArgumentParser(description="AI Commercial Generator.")
-    parser.add_argument('-t', "--topic"   , dest="commercial_topic", required=True,  type=str, help="The commercial topic.")
-    parser.add_argument('-g', "--generate", dest="should_generate" , required=False, action='store_true', help="Whether to generate new content or to look for existing content for the video. WARNING: this will use credits from the AI APIs.")
-    parser.add_argument('-n',               dest="n",                required=False, type=int, help="The number of images to produce for the video, with each image being on-screen for 15 sec. WARNING: ensure you have enough ElevenLabs credits.")
-    parser.add_argument('-v', "--video"   , dest="video_version"   , required=False, action='store_true', help="This will use the videos already generated in the folder out/videos and the text and speech already in out to generate a video")
-    parser.set_defaults(should_generate=False)
+    parser.add_argument('-t', "--topic"   , dest="commercial_topic", required=False,  type=str, help="The commercial topic.")
+    parser.add_argument('-n',               dest="n",                required=False, type=int, help="The number of images to produce for the video. WARNING: ensure you have enough ElevenLabs credits.")
+    parser.add_argument('-g', "--gui",      dest="gui",              required=False, action='store_true', help="Used only internally by the website GUI.")
+
+    parser.set_defaults(gui=False)
     parser.set_defaults(n=5)
 
     args = parser.parse_args()
     commercial_topic = args.commercial_topic
     n = args.n
+    gui = args.gui
 
-    commercial_length = n * 40
-
-    script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
-
-    if args.video_version:
+    if commercial_topic == None:
         print(f"Generating video only")
         create_vid2()
-    elif args.should_generate:
-        response = gemini_model.generate_content(script)
-        processed_text = re.sub("\(.*?\)|\[.*?\]", "", response.text)
-        print(processed_text)
 
-        # await create_image(commercial_topic, n)
-        # await create_speech(processed_text)
+    else:
+        yes_or_no = input("This will cost credits. Are you sure you want to proceed? (y/n): ").strip()
 
-    #create_video(n)
+        if yes_or_no == 'y' or gui:
+            commercial_length = n * 40
+
+            script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
+
+            response = gemini_model.generate_content(script)
+            processed_text = re.sub("\(.*?\)|\[.*?\]", "", response.text)
+            print(processed_text)
+
+            await create_image(commercial_topic, n)
+            await create_speech(processed_text)
+            create_video(n)
 
 asyncio.run(main())
 
