@@ -179,9 +179,9 @@ async def main():
         create_vid2()
 
     else:
-        yes_or_no = input("This will cost credits. Are you sure you want to proceed? (y/n): ").strip()
+        yes_or_no = 'y' if gui else input("This will cost credits. Are you sure you want to proceed? (y/n): ").strip()
 
-        if yes_or_no == 'y' or gui:
+        if yes_or_no == 'y':
             commercial_length = n * 40
 
             script = f"make a commercial speech about {commercial_topic}, intended for about {commercial_length} sec, in the style of an Apple (the company) commercial, and include ONLY the actual lines from the narrator, not stuff like 'It was a sunny day', and also do not literally write **Narrator** whenever the narrator speaks, and do not describe the scenery ala 'closeup shot of the banana', I repeat, DO NOT DESCRIBE THE SCENERY NOR WHAT IS HAPPENING IN THE COMMERCIAL, ONLY WRITE EXACTLY WHAT THE NARRATOR SAYS"
