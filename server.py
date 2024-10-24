@@ -1,13 +1,20 @@
 import sys
 print(sys.executable)
 
-from flask import Flask, request, send_file, render_template
+from flask import Flask, request, send_file, send_from_directory
 import subprocess
 import os
 
 
-
 app = Flask(__name__)
+
+# Define the path to the directory where the video is stored
+OUT_DIR = 'out'
+
+# Serve the video files from the /out directory
+@app.route('/out/<path:filename>')
+def serve_video(filename):
+    return send_from_directory(OUT_DIR, filename)
 
 @app.route('/')
 def index():
